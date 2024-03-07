@@ -2,10 +2,11 @@ import {
   BaseEntity,
   Column,
   Entity,
-  // OneToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
-  // Relation,
+  Relation,
 } from 'typeorm';
+import { RefreshToken } from './refresh-token.entity';
 
 // export type UserRole = 'admin | user';
 
@@ -25,4 +26,7 @@ export class User extends BaseEntity {
 
   @Column()
   phone: string;
+
+  @OneToMany(() => RefreshToken, (token) => token.user)
+  refreshToken: Relation<RefreshToken[]>;
 }

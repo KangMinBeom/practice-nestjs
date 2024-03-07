@@ -6,6 +6,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { AccessTokenRepository } from '../repository/access-token.repository';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { AccessLogRepository } from '../repository/access-log.repository';
+import { RefreshTokenRepository } from '../repository/refresh-token.repository';
+import { SignInResponseDto } from '../dto/signin-res.dto';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class authService {
@@ -14,7 +18,47 @@ export class authService {
     private readonly accessTokenRepository: AccessTokenRepository,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
+    private readonly accessLogRepository: AccessLogRepository,
+    private readonly refreshTokenRepository: RefreshTokenRepository,
   ) {}
+
+  async login(
+    email: string,
+    password: string,
+    req: RequestInfo,
+  ): Promise<SignInResponseDto> {
+    const user = await this.validateUser(email, password);
+    const payload: TokenPayload = this.createTokenPayload(user.id);
+
+    const [accessToken, refreshToken] = await Promise.all([
+      this.createAccessToken(user, payload),
+      this.createRefreshToken(user, payload),
+    ]);
+
+    const { ip, endpoint, ua } = req;
+    await this.accessLogRepository.createAccessLog(user, ua, endpoint, ip);
+
+    return {
+      accessToken,
+      refreshToken,
+      email: user.email,
+      username: user.username,
+      phone: user.phone,
+    };
+  }
+
+  private async validateUser(email: string, password: string): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (user && (await bcrypt.compare(password, user.password))) {
+      return user;
+    }
+    throw new BusinessException(
+      'auth',
+      'invalid-credentials',
+      'Invalid credentials',
+      HttpStatus.UNAUTHORIZED,
+    );
+  }
 
   createTokenPayload(userId: string): TokenPayload {
     return {

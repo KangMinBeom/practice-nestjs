@@ -25,6 +25,24 @@ export class AuthController {
     };
   }
 
+  @Post('signin')
+  async signin(
+    @Req() req,
+    @Body() signinRequestDto: SignInRequestDto,
+  ): Promise<SignInResponseDto> {
+    const { ip, method, originalUrl } = req;
+    const reqInfo = {
+      ip,
+      endpoint: `${method} ${originalUrl}`,
+      ua: req.headers['user-agent'] || '',
+    };
+
+    return this.authService.login(
+      signinRequestDto.email,
+      signinRequestDto.password,
+      reqInfo,
+    );
+
   @Post('refresh')
   async refresh(@Body() dto: RefreshRequestDto): Promise<string> {
     return this.authService.refreshAccessToken(dto.refreshToken);

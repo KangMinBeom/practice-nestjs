@@ -1,11 +1,9 @@
-export class SignInRequestDto {
+export class SignInResponseDto {
   accessToken: string;
 
   refreshToken: string;
 
   email: string;
-
-  password: string;
 
   username: string;
 

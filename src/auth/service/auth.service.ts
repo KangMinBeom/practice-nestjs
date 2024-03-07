@@ -48,8 +48,11 @@ export class AuthService {
     };
   }
 
-  async logout(accessToken: string, refreshToken: string): Promise<void> {
-    
+  async logout(id: string): Promise<void> {
+    await Promise.all([
+      this.refreshTokenRepository.delete(id),
+      this.accessTokenRepository.delete(id),
+    ]);
   }
 
   private async validateUser(email: string, password: string): Promise<User> {

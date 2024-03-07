@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { SignInRequestDto } from '../dto/signin-req.dto';
 import { SignInResponseDto } from '../dto/signin-res.dto';
 import { SignUpResponseDto } from '../dto/signup-res.dto';
@@ -6,6 +6,7 @@ import { SignUpRequestDto } from '../dto/signup-req.dto';
 import { UserService } from '../service/user.service';
 import { RefreshRequestDto } from '../dto/refresh-req.dto';
 import { AuthService } from '../service/auth.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -52,9 +53,8 @@ export class AuthController {
   }
 
   @Post('logout')
+  @UseGuards(AuthGuard())
   async logout(@Req() req) {
-    const accessToken = req.headers['authorization'];
-    const refreshToken = req.body.refreshToken;
-    return this.authService.logout(accessToken, refreshToken);
+    return this.authService.logout(req.user.id);
   }
 }

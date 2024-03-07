@@ -19,6 +19,10 @@ export class UserRepository extends Repository<User> {
     return this.repo.findOneBy({ email });
   }
 
+  async findById(id: string): Promise<User> {
+    return this.repo.findOneBy({ id });
+  }
+
   async signup(
     signupRequestDto: SignUpRequestDto,
     hashedPassword: string,

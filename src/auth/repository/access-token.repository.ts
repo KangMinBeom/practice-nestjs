@@ -17,16 +17,20 @@ export class AccessTokenRepository extends Repository<AccessToken> {
       accessTokenRepository.manager,
       accessTokenRepository.queryRunner,
     );
+  }
 
-    async saveAccessToken(jti: string, user:User, token: string, expiresAt: Date,): Promise<AccessToken>{
-        const accessToken = new AccessToken(){
-            accessToken.user = user;
-            accessToken.jti = jti;
-            accessToken.token = token;
-            accessToken.expiresAt = expiresAt;
-            accessToken.isRevoked = false;
-            this.save(accessToken)
-        }
-    }
+  async saveAccessToken(
+    jti: string,
+    user: User,
+    token: string,
+    expiresAt: Date,
+  ): Promise<AccessToken> {
+    const accessToken = new AccessToken();
+    accessToken.user = user;
+    accessToken.jti = jti;
+    accessToken.token = token;
+    accessToken.expiresAt = expiresAt;
+    accessToken.isRevoked = false;
+    return this.save(accessToken);
   }
 }

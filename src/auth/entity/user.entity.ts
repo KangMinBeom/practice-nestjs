@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
+import { RefreshToken } from './refresh-token.entity';
 import { AccessToken } from './access-token.entity';
 import { AccessLog } from './access-log.entity';
 
@@ -33,4 +34,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => AccessToken, (token) => token.user)
   accessToken: Relation<AccessToken[]>;
+
+  @OneToMany(() => RefreshToken, (token) => token.user)
+  refreshToken: Relation<RefreshToken[]>;
 }

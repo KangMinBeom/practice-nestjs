@@ -12,7 +12,7 @@ import { SignInResponseDto } from '../dto/signin-res.dto';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
-export class authService {
+export class AuthService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly accessTokenRepository: AccessTokenRepository,
@@ -45,6 +45,31 @@ export class authService {
       username: user.username,
       phone: user.phone,
     };
+  }
+
+  async logout(accessToken: string, refreshToken: string): Promise<void> {
+    const [jtiAccess, jtiRefresh] = await Promise.all([
+      this.jwtService.verifyAsync(accessToken, {
+        secret: this.configService.get<string>('JWT_SECRET'),
+      }),
+      this.jwtService.verifyAsync(refreshToken, {
+        secret: this.configService.get<string>('JWT_SECRET'),
+      }),
+    ]);
+    await Promise.all([
+      this.addToBlacklist(
+        accessToken,
+        jtiAccess,
+        'access',
+        'ACCESS_TOKEN_EXPIRY',
+      ),
+      this.addToBlacklist(
+        refreshToken,
+        jtiRefresh,
+        'refresh',
+        'REFRESH_TOKEN_EXPIRY',
+      ),
+    ]);
   }
 
   private async validateUser(email: string, password: string): Promise<User> {

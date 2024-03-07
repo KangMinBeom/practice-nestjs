@@ -46,9 +46,15 @@ export class AuthController {
     );
   }
 
-    @Post('refresh')
-    async refresh(@Body() dto: RefreshRequestDto): Promise<string> {
-      return this.authService.refreshAccessToken(dto.refreshToken);
-    }
+  @Post('refresh')
+  async refresh(@Body() refreshTokendto: RefreshRequestDto): Promise<string> {
+    return this.authService.refreshAccessToken(refreshTokendto.refreshToken);
+  }
+
+  @Post('logout')
+  async logout(@Req() req) {
+    const accessToken = req.headers['authorization'];
+    const refreshToken = req.body.refreshToken;
+    return this.authService.logout(accessToken, refreshToken);
   }
 }

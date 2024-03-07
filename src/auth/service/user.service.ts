@@ -41,7 +41,6 @@ export class UserService {
       this.accessTokenRepository.findOneByJti(jti),
     ]);
     if (!user) {
-      this.logger.error(`user ${id} not found`);
       throw new BusinessException(
         'user',
         `user not found`,
@@ -50,7 +49,6 @@ export class UserService {
       );
     }
     if (!token) {
-      this.logger.error(`jti ${jti} token is revoked`);
       throw new BusinessException(
         'user',
         `revoked token`,

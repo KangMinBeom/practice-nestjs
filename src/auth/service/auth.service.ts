@@ -10,7 +10,6 @@ import { AccessLogRepository } from '../repository/access-log.repository';
 import { RefreshTokenRepository } from '../repository/refresh-token.repository';
 import { SignInResponseDto } from '../dto/signin-res.dto';
 import * as bcrypt from 'bcryptjs';
-import { TokenBlacklistService } from './token-blacklist.service';
 import { BusinessException } from 'src/exception/BusinessException';
 
 @Injectable()
@@ -22,7 +21,6 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly accessLogRepository: AccessLogRepository,
     private readonly refreshTokenRepository: RefreshTokenRepository,
-    private readonly tokenBlacklistService: TokenBlacklistService,
   ) {}
 
   async login(
@@ -51,28 +49,7 @@ export class AuthService {
   }
 
   async logout(accessToken: string, refreshToken: string): Promise<void> {
-    const [jtiAccess, jtiRefresh] = await Promise.all([
-      this.jwtService.verifyAsync(accessToken, {
-        secret: this.configService.get<string>('JWT_SECRET'),
-      }),
-      this.jwtService.verifyAsync(refreshToken, {
-        secret: this.configService.get<string>('JWT_SECRET'),
-      }),
-    ]);
-    await Promise.all([
-      this.addToBlacklist(
-        accessToken,
-        jtiAccess,
-        'access',
-        'ACCESS_TOKEN_EXPIRY',
-      ),
-      this.addToBlacklist(
-        refreshToken,
-        jtiRefresh,
-        'refresh',
-        'REFRESH_TOKEN_EXPIRY',
-      ),
-    ]);
+    
   }
 
   private async validateUser(email: string, password: string): Promise<User> {
@@ -108,23 +85,6 @@ export class AuthService {
     );
 
     return token;
-  }
-
-  private async addToBlacklist(
-    token: string,
-    jti: string,
-    type: 'access' | 'refresh',
-    expiryConfigKey: string,
-  ): Promise<void> {
-    const expiryTime = this.calculateExpiry(
-      this.configService.get<string>(expiryConfigKey),
-    );
-    await this.tokenBlacklistService.addToBlacklist(
-      token,
-      jti,
-      type,
-      expiryTime,
-    );
   }
 
   private calculateExpiry(expiry: string): Date {

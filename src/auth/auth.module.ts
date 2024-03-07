@@ -1,20 +1,13 @@
 import { Module } from '@nestjs/common';
-import {
-  AccessLog,
-  AccessToken,
-  RefreshToken,
-  TokenBlacklist,
-  User,
-} from './entity';
+import { AccessLog, AccessToken, RefreshToken, User } from './entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   AccessLogRepository,
   AccessTokenRepository,
   RefreshTokenRepository,
-  TokenBlacklistRepository,
   UserRepository,
 } from './repository';
-import { AuthService, TokenBlacklistService, UserService } from './service';
+import { AuthService, UserService } from './service';
 import { AuthController } from './controller/auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -37,38 +30,28 @@ import { JwtStrategy } from './strategy';
       }),
     }),
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    TypeOrmModule.forFeature([
-      User,
-      AccessToken,
-      RefreshToken,
-      AccessLog,
-      TokenBlacklist,
-    ]),
+    TypeOrmModule.forFeature([User, AccessToken, RefreshToken, AccessLog]),
   ],
   controllers: [AuthController],
   providers: [
     UserService,
     AuthService,
-    TokenBlacklistService,
 
     UserRepository,
     AccessTokenRepository,
     RefreshTokenRepository,
     AccessLogRepository,
-    TokenBlacklistRepository,
 
     JwtStrategy,
   ],
   exports: [
     UserService,
     AuthService,
-    TokenBlacklistService,
 
     UserRepository,
     AccessTokenRepository,
     RefreshTokenRepository,
     AccessLogRepository,
-    TokenBlacklistRepository,
 
     JwtStrategy,
   ],

@@ -2,9 +2,9 @@ import {
   BaseEntity,
   Column,
   Entity,
-  // OneToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
-  // Relation,
+  Relation,
 } from 'typeorm';
 
 // export type UserRole = 'admin | user';

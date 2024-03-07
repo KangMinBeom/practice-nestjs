@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-// import { DataSource } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { validationSchema } from './config/validation.schema';
+import { addTransactionalDataSource } from 'typeorm-transactional';
 
 @Module({
   imports: [
@@ -25,12 +26,12 @@ import { validationSchema } from './config/validation.schema';
         synchronize: configService.get<string>('RUNTIME') !== 'prod',
         logging: configService.get<string>('RUNTIME') !== 'prod',
       }),
-      // async dataSourceFactory(options) {
-      //   if (!options) {
-      //     throw new Error('Invalid options passed');
-      //   }
-      //   return addTransactionalDataSource(new DataSource(options));
-      // },
+      async dataSourceFactory(options) {
+        if (!options) {
+          throw new Error('Invalid options passed');
+        }
+        return addTransactionalDataSource(new DataSource(options));
+      },
     }),
     AuthModule,
   ],

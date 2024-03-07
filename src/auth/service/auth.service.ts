@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpStatus } from '@nestjs/common';
 import { UserRepository } from '../repository/user.repository';
 import { User } from '../entity/user.entity';
 import { RequestInfo, TokenPayload } from '../types/index';
@@ -11,6 +11,7 @@ import { RefreshTokenRepository } from '../repository/refresh-token.repository';
 import { SignInResponseDto } from '../dto/signin-res.dto';
 import * as bcrypt from 'bcryptjs';
 import { TokenBlacklistService } from './token-blacklist.service';
+import { BusinessException } from 'src/exception/BusinessException';
 
 @Injectable()
 export class AuthService {
@@ -163,6 +164,7 @@ export class AuthService {
       token,
       expiresAt,
     );
+    return token;
   }
 
   async refreshAccessToken(refreshToken: string): Promise<string> {

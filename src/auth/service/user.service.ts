@@ -2,17 +2,16 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
-  UseFilters,
+  HttpStatus,
 } from '@nestjs/common';
 import { UserRepository } from '../repository/user.repository';
 import { SignUpRequestDto } from '../dto/signup-req.dto';
 import * as bcrypt from 'bcryptjs';
 import { User } from '../entity/user.entity';
-import { HttpExceptionFilter } from 'src/exception/http-Exception.filter';
+import { BusinessException } from 'src/exception/BusinessException';
 import { AccessTokenRepository } from '../repository/access-token.repository';
 
 @Injectable()
-@UseFilters(new HttpExceptionFilter())
 export class UserService {
   constructor(
     private readonly userRepository: UserRepository,

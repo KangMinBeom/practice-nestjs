@@ -1,15 +1,76 @@
 import { Module } from '@nestjs/common';
+import {
+  AccessLog,
+  AccessToken,
+  RefreshToken,
+  TokenBlacklist,
+  User,
+} from './entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserService } from './service/user.service';
-import { AuthService } from './service/auth.service';
+import {
+  AccessLogRepository,
+  AccessTokenRepository,
+  RefreshTokenRepository,
+  TokenBlacklistRepository,
+  UserRepository,
+} from './repository';
+import { AuthService, TokenBlacklistService, UserService } from './service';
 import { AuthController } from './controller/auth.controller';
-import { User } from './entity/user.entity';
-import { UserRepository } from './repository/user.repository';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { HttpModule } from '@nestjs/axios';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './strategy';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [
+    HttpModule,
+    ConfigModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: {
+          expiresIn: configService.get<string>('ACCESS_TOKEN_EXPIRY'),
+        },
+      }),
+    }),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    TypeOrmModule.forFeature([
+      User,
+      AccessToken,
+      RefreshToken,
+      AccessLog,
+      TokenBlacklist,
+    ]),
+  ],
   controllers: [AuthController],
-  providers: [UserService, UserRepository, AuthService],
-  exports: [UserService, UserRepository, AuthService],
+  providers: [
+    UserService,
+    AuthService,
+    TokenBlacklistService,
+
+    UserRepository,
+    AccessTokenRepository,
+    RefreshTokenRepository,
+    AccessLogRepository,
+    TokenBlacklistRepository,
+
+    JwtStrategy,
+  ],
+  exports: [
+    UserService,
+    AuthService,
+    TokenBlacklistService,
+
+    UserRepository,
+    AccessTokenRepository,
+    RefreshTokenRepository,
+    AccessLogRepository,
+    TokenBlacklistRepository,
+
+    JwtStrategy,
+  ],
 })
 export class AuthModule {}

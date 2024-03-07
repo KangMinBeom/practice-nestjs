@@ -1,6 +1,11 @@
 import * as Joi from '@hapi/joi';
 
 export const validationSchema = Joi.object({
+  //JWT
+  JWT_SECRET: Joi.string().required(),
+  ACCESS_TOKEN_EXPIRY: Joi.string().required(),
+  REFRESH_TOKEN_EXPIRY: Joi.string().required(),
+
   //DB
   DB_HOST: Joi.string().required(),
   DB_PORT: Joi.number().required(),

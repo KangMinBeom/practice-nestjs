@@ -10,6 +10,7 @@ import { AccessLogRepository } from '../repository/access-log.repository';
 import { RefreshTokenRepository } from '../repository/refresh-token.repository';
 import { SignInResponseDto } from '../dto/signin-res.dto';
 import * as bcrypt from 'bcryptjs';
+import { TokenBlacklistService } from './token-blacklist.service';
 
 @Injectable()
 export class authService {
@@ -20,6 +21,7 @@ export class authService {
     private readonly jwtService: JwtService,
     private readonly accessLogRepository: AccessLogRepository,
     private readonly refreshTokenRepository: RefreshTokenRepository,
+    private readonly tokenBlacklistService: TokenBlacklistService,
   ) {}
 
   async login(
@@ -80,6 +82,23 @@ export class authService {
     );
 
     return token;
+  }
+
+  private async addToBlacklist(
+    token: string,
+    jti: string,
+    type: 'access' | 'refresh',
+    expiryConfigKey: string,
+  ): Promise<void> {
+    const expiryTime = this.calculateExpiry(
+      this.configService.get<string>(expiryConfigKey),
+    );
+    await this.tokenBlacklistService.addToBlacklist(
+      token,
+      jti,
+      type,
+      expiryTime,
+    );
   }
 
   private calculateExpiry(expiry: string): Date {

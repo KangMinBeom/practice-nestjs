@@ -2,11 +2,11 @@ import {
   BaseEntity,
   Column,
   Entity,
-  // OneToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
-  // Relation,
+  Relation,
 } from 'typeorm';
-
+import { AccessToken } from './access-token.entity';
 // export type UserRole = 'admin | user';
 
 @Entity()
@@ -25,4 +25,7 @@ export class User extends BaseEntity {
 
   @Column()
   phone: string;
+
+  @OneToMany(() => AccessToken, (token) => token.user)
+  accessToken: Relation<AccessToken[]>;
 }

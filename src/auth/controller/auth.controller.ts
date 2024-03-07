@@ -4,6 +4,8 @@ import { SignUpResponseDto } from '../dto/signup-res.dto';
 import { UserService } from '../service/user.service';
 import { RefreshRequestDto } from '../dto/refresh-req.dto';
 import { AuthService } from '../service/auth.service';
+import { SignInRequestDto } from '../dto/signin-req.dto';
+import { SignInResponseDto } from '../dto/signin-res.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -24,6 +26,24 @@ export class AuthController {
       phone: user.phone,
     };
   }
+
+  @Post('signin')
+  async signin(
+    @Req() req,
+    @Body() signinRequestDto: SignInRequestDto,
+  ): Promise<SignInResponseDto> {
+    const { ip, method, originalUrl } = req;
+    const reqInfo = {
+      ip,
+      endpoint: `${method} ${originalUrl}`,
+      ua: req.headers['user-agent'] || '',
+    };
+
+    return this.authService.login(
+      signinRequestDto.email,
+      signinRequestDto.password,
+      reqInfo,
+    );
 
   @Post('refresh')
   async refresh(@Body() dto: RefreshRequestDto): Promise<string> {

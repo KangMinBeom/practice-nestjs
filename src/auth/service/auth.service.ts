@@ -16,6 +16,26 @@ export class authService {
     private readonly jwtService: JwtService,
   ) {}
 
+  async login(email: string, password: string, req: RequestInfo): Promise<SignInResponseDto>{
+    const user = await this.validateUser(email, password);
+    const payload: TokenPayload = this.createTokenPayload(user.id);
+
+    const [accessToken, RefreshToken] = await Promise.all({
+        this.createAccessToken(user, payload),
+        this.createRefreshToken(user, payload),
+    });
+};
+
+private async validateUser{
+  email: string,
+  password: string,
+  }: Promise<User>{
+      const user = this.userRepository.findOne({email});
+      if( user && (await bcrypt.compare(password, user.password))){
+
+      }
+  }
+
   createTokenPayload(userId: string): TokenPayload {
     return {
       sub: userId,

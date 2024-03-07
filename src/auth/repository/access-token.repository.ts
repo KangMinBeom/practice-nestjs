@@ -33,4 +33,8 @@ export class AccessTokenRepository extends Repository<AccessToken> {
     accessToken.isRevoked = false;
     return this.save(accessToken);
   }
+
+  async findOneByJti(jti: string): Promise<AccessToken> {
+    return this.findOneBy({ jti, isRevoked: false });
+  }
 }

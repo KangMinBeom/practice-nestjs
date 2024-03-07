@@ -63,4 +63,47 @@ export class authService {
     }
     return new Date(Date.now() + expiresInMilliseconds);
   }
+
+  async createRefreshToken(user: User, payload: TokenPayload): Promise<string> {
+    const expiresIn = this.configService.get<string>('REFRESH_TOKEN_EXPIRY');
+    const token = this.jwtService.sign(user, { expiresIn });
+    const expiresAt = this.calculateExpiry(expiresIn);
+
+    await this.refreshTokenRepository.saveRefreshToken(
+      payload.jti,
+      user,
+      token,
+      expiresAt,
+    );
+  }
+
+  async refreshAccessToken(refreshToken: string): Promise<string> {
+    try {
+      const { exp, ...payload } = await this.jwtService.verifyAsync(
+        refreshToken,
+        {
+          secret: this.configService.get<string>('JWT_SECRET'),
+        },
+      );
+
+      const user = await this.userRepository.findOneBy({ id: payload.sub });
+      if (!user) {
+        throw new BusinessException(
+          'auth',
+          'user-not-found',
+          'User not found',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+
+      return this.createAccessToken(user, payload as TokenPayload);
+    } catch (error) {
+      throw new BusinessException(
+        'auth',
+        'invalid-refresh-token',
+        'Invalid refresh token',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+  }
 }

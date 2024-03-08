@@ -8,8 +8,6 @@ RUN npm install
 
 COPY . .
 
-RUN npm install
-
 RUN yarn install
 
 RUN npm run build

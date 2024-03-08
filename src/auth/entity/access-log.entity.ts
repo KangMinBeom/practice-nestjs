@@ -1,8 +1,18 @@
-import { Column, Entity, ManyToOne, Relation, BaseEntity } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  Relation,
+  BaseEntity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from './user.entity';
 
 @Entity()
 export class AccessLog extends BaseEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
   @Column({ type: 'varchar', length: 512, nullable: true })
   ua: string;
 

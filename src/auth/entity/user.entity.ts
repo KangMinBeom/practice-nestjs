@@ -9,6 +9,8 @@ import {
 import { RefreshToken } from './refresh-token.entity';
 import { AccessToken } from './access-token.entity';
 import { AccessLog } from './access-log.entity';
+import { Point } from '../../payment/entity/point.entity';
+import { Order } from '../../payment/entity/order.entity';
 
 // export type UserRole = 'admin | user';
 
@@ -37,4 +39,10 @@ export class User extends BaseEntity {
 
   @OneToMany(() => RefreshToken, (token) => token.user)
   refreshToken: Relation<RefreshToken[]>;
+
+  @OneToMany(() => Point, (point) => point.user)
+  point: Relation<Point>;
+
+  @OneToMany(() => Order, (order) => order.user)
+  orders: Relation<Order>;
 }

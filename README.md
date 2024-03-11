@@ -12,15 +12,15 @@ docker-compose up -d
 ```
 
 ## 구현 범위
-auth: 회원가입, 로그인, JWT(AccessToken, RefreshToken)을 사용하여 인증을 담당합니다.
-payment:주문, 결제를 담당합니다. 장바구니, 배송, 포인트/쿠폰 시스템을 담고 있습니다.
+- auth: 회원가입, 로그인, JWT(AccessToken, RefreshToken)을 사용하여 인증을 담당합니다.
+- payment:주문, 결제를 담당합니다. 장바구니, 배송, 포인트/쿠폰 시스템을 담고 있습니다.
 
 ## 기술스택
-TypeScript + NestJS + SWC
-Yarn berry + Plug'n'Play + Zero-Install
-TypeORM + PostgreSQL
-Joi
-Jest
+- TypeScript + NestJS + SWC
+- Yarn berry + Plug'n'Play + Zero-Install
+- TypeORM + PostgreSQL
+- Joi
+- Jest
 
 ## 주요 기능
 ### 회원가입

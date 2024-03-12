@@ -1,5 +1,5 @@
 import { EntityManager, Repository } from 'typeorm';
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { OrderItem } from '../entity/order-item.entity';
 import { ShippingInfo } from '../entity/shipping-info.entity';
@@ -7,6 +7,7 @@ import { Order } from '../entity/order.entity';
 import { UserRepository } from '../../auth/repository/user.repository';
 import { IssuedCouponRepository } from './issued-coupon.repository';
 import { PointRepository } from './point.repository';
+import { BusinessException } from '~/src/exception/BusinessException';
 
 @Injectable()
 export class OrderRepository extends Repository<Order> {
@@ -40,6 +41,14 @@ export class OrderRepository extends Repository<Order> {
 
   async completeOrder(orderId: string): Promise<Order> {
     const order = await this.findOne({ where: { id: orderId } });
+    if (!order) {
+      throw new BusinessException(
+        'payment',
+        'Not Found ${orderId}',
+        'Not Found ${orderId}',
+        HttpStatus.NOT_FOUND,
+      );
+    }
     order.status = 'paid';
 
     await Promise.all([

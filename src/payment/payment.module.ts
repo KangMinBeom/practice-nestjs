@@ -19,6 +19,7 @@ import { PointLogRepository } from './Repository/point-log.repository';
 import { PointRepository } from './Repository/point.repository';
 import { ProductRepository } from './Repository/product.repository';
 import { ShippingInfoRepository } from './Repository/shipping-info.repository';
+import { PaymentController } from './controller/payment.controller';
 @Module({
   imports: [
     AuthModule,
@@ -33,6 +34,7 @@ import { ShippingInfoRepository } from './Repository/shipping-info.repository';
       Product,
     ]),
   ],
+  controllers: [PaymentController],
   providers: [
     PaymentService,
     ProductService,

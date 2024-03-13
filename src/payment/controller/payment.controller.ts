@@ -10,7 +10,7 @@ export class PaymentController {
     private readonly productService: ProductService,
   ) {}
 
-  @Post('/orderId')
+  @Post('/order')
   async initOrder(@Body() createOrderDto: CreateOrderDto) {
     return this.paymentService.initOrder(createOrderDto);
   }

@@ -22,16 +22,7 @@ export class PaymentService {
 
   @Transactional()
   async initOrder(dto: CreateOrderDto): Promise<Order> {
-    // 주문 금액 계산
-    const totalAmount = await this.calculateTotalAmount(dto.orderItems);
-
-    // 할인 적용
-    const finalAmount = await this.applyDiscounts(
-      totalAmount,
-      dto.userId,
-      dto.couponId,
-      dto.pointAmountToUse,
-    );
+    const finalAmount = await this.calculateFianlAmount(dto);
 
     // 주문 생성
     return this.createOrder(
@@ -61,6 +52,16 @@ export class PaymentService {
       orderItems,
       finalAmount,
       shippingInfo,
+    );
+  }
+
+  private async calculateFianlAmount(dto: CreateOrderDto): Promise<number> {
+    const totalAmount = await this.calculateTotalAmount(dto.orderItems);
+    return this.applyDiscounts(
+      totalAmount,
+      dto.userId,
+      dto.couponId,
+      dto.pointAmountToUse,
     );
   }
 

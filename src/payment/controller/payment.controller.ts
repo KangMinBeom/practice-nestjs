@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { PaymentService } from '../service/payment.service';
 import { ProductService } from '../service/product.service';
 import { CreateOrderDto } from '../dto/create-order.dto';
@@ -20,10 +20,8 @@ export class PaymentController {
     return this.paymentService.completeOrder(orderId);
   }
 
-  @Get('confirm')
-  async confirmPayment(@Query() paymentInfo: any): Promise<any> {
-    const confirmResponse =
-      await this.paymentService.confirmPayment(paymentInfo);
-    return { data: confirmResponse };
+  @Post('confirm')
+  async confirmPayment(@Body() req): Promise<any> {
+    return this.paymentService.confirmPayment(req);
   }
 }

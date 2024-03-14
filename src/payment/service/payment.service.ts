@@ -10,7 +10,7 @@ import { PointRepository } from '../repository/point.repository';
 import { ShippingInfoRepository } from '../repository/shipping-info.repository';
 import { Transactional } from 'typeorm-transactional';
 import { ConfigService } from '@nestjs/config';
-import { PaymentInfo } from '../entity/payment-info.entity';
+import { PaymentsRepository } from '../repository/payments.repository';
 
 @Injectable()
 export class PaymentService {
@@ -21,6 +21,7 @@ export class PaymentService {
     private readonly shippingInfoRepository: ShippingInfoRepository,
     private readonly orderRepository: OrderRepository,
     private readonly configService: ConfigService,
+    private readonly paymentsRepository: PaymentsRepository,
   ) {}
 
   @Transactional()
@@ -41,8 +42,9 @@ export class PaymentService {
     return this.orderRepository.completeOrder(orderId);
   }
 
-  async confirmPayment(paymentInfo: PaymentInfo): Promise<any> {
-    const { paymentKey, orderId, amount } = paymentInfo;
+  async confirmPayment(payments: any): Promise<any> {
+    const { paymentKey, orderId, amount, orderNo } = payments.body;
+
     const secretKey = this.configService.get<string>('SecretKey');
     const encryptedSecretKey =
       'Basic ' + Buffer.from(secretKey + ':').toString('base64');
@@ -61,7 +63,12 @@ export class PaymentService {
       );
       const data = await response.json();
       console.log(data);
-      return data;
+      return this.paymentsRepository.savePayments(
+        paymentKey,
+        orderId,
+        amount,
+        orderNo,
+      );
     } catch (error) {
       console.error('Error confirming payment:', error);
       throw new BusinessException(

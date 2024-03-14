@@ -8,18 +8,21 @@ import {
 import { Order } from './order.entity';
 
 @Entity()
-export class PaymentInfo {
+export class Payments {
   @PrimaryGeneratedColumn()
-  id: number;
+  paymentId: number;
 
   @Column()
   paymentKey: string;
 
   @Column()
-  orderId: string;
+  amount: number;
 
   @Column()
-  amount: number;
+  orderId: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  paymentedAt: Date;
 
   @OneToOne(() => Order, { nullable: true })
   @JoinColumn()

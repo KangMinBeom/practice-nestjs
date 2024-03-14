@@ -4,7 +4,7 @@ import { Coupon } from './entity/coupon.entity';
 import { IssuedCoupon } from './entity/issued-coupon.entity';
 import { Order } from './entity/order.entity';
 import { OrderItem } from './entity/order-item.entity';
-import { PaymentInfo } from './entity/payment-info.entity';
+import { Payments } from './entity/payments.entity';
 import { Point } from './entity/point.entity';
 import { PointLog } from './entity/point-log.entity';
 import { Product } from './entity/product.entity';
@@ -21,6 +21,7 @@ import { PointRepository } from './Repository/point.repository';
 import { ProductRepository } from './Repository/product.repository';
 import { ShippingInfoRepository } from './Repository/shipping-info.repository';
 import { PaymentController } from './controller/payment.controller';
+import { PaymentsRepository } from './repository/payments.repository';
 @Module({
   imports: [
     AuthModule,
@@ -33,7 +34,7 @@ import { PaymentController } from './controller/payment.controller';
       Coupon,
       IssuedCoupon,
       Product,
-      PaymentInfo,
+      Payments,
     ]),
   ],
   controllers: [PaymentController],
@@ -48,6 +49,7 @@ import { PaymentController } from './controller/payment.controller';
     IssuedCouponRepository,
     PointRepository,
     PointLogRepository,
+    PaymentsRepository,
   ],
 })
 export class PaymentModule {}

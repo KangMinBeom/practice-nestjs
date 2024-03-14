@@ -9,6 +9,8 @@ import { OrderRepository } from '../repository/order.repository';
 import { PointRepository } from '../repository/point.repository';
 import { ShippingInfoRepository } from '../repository/shipping-info.repository';
 import { Transactional } from 'typeorm-transactional';
+import { ConfigService } from '@nestjs/config';
+import { PaymentInfo } from '../entity/payment-info.entity';
 
 @Injectable()
 export class PaymentService {
@@ -18,6 +20,7 @@ export class PaymentService {
     private readonly productService: ProductService,
     private readonly shippingInfoRepository: ShippingInfoRepository,
     private readonly orderRepository: OrderRepository,
+    private readonly configService: ConfigService,
   ) {}
 
   @Transactional()
@@ -36,6 +39,38 @@ export class PaymentService {
   @Transactional()
   async completeOrder(orderId: string): Promise<Order> {
     return this.orderRepository.completeOrder(orderId);
+  }
+
+  async confirmPayment(paymentInfo: PaymentInfo): Promise<any> {
+    const { paymentKey, orderId, amount } = paymentInfo;
+    const secretKey = this.configService.get<string>('SecretKey');
+    const encryptedSecretKey =
+      'Basic ' + Buffer.from(secretKey + ':').toString('base64');
+
+    try {
+      const response = await fetch(
+        'https://api.tosspayments.com/v1/payments/confirm',
+        {
+          method: 'POST',
+          body: JSON.stringify({ orderId, amount, paymentKey }),
+          headers: {
+            Authorization: encryptedSecretKey,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      const data = await response.json();
+      console.log(data);
+      return data;
+    } catch (error) {
+      console.error('Error confirming payment:', error);
+      throw new BusinessException(
+        'payment',
+        `Error confirming payment: ${error}`,
+        'Error confirming payment: ${error}',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   private async createOrder(

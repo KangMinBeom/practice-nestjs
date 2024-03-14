@@ -19,7 +19,7 @@ import { ShippingInfo } from './shipping-info.entity';
 import { User } from '../../auth/entity/user.entity';
 
 import { IssuedCoupon } from './issued-coupon.entity';
-import { PaymentInfo } from './toss-info.entity';
+import { PaymentInfo } from './payment-info.entity';
 
 export type OrderStatus = 'started' | 'paid' | 'refunded';
 

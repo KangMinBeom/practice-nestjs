@@ -4,6 +4,7 @@ import { Coupon } from './entity/coupon.entity';
 import { IssuedCoupon } from './entity/issued-coupon.entity';
 import { Order } from './entity/order.entity';
 import { OrderItem } from './entity/order-item.entity';
+import { PaymentInfo } from './entity/payment-info.entity';
 import { Point } from './entity/point.entity';
 import { PointLog } from './entity/point-log.entity';
 import { Product } from './entity/product.entity';
@@ -32,6 +33,7 @@ import { PaymentController } from './controller/payment.controller';
       Coupon,
       IssuedCoupon,
       Product,
+      PaymentInfo,
     ]),
   ],
   controllers: [PaymentController],

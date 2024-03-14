@@ -19,6 +19,7 @@ import { ShippingInfo } from './shipping-info.entity';
 import { User } from '../../auth/entity/user.entity';
 
 import { IssuedCoupon } from './issued-coupon.entity';
+import { PaymentInfo } from './toss-info.entity';
 
 export type OrderStatus = 'started' | 'paid' | 'refunded';
 
@@ -76,8 +77,8 @@ export class Order extends BaseEntity {
   @Column({ type: 'timestamp', nullable: true })
   refundedAt: Date;
 
-  @Column({ type: 'jsonb', nullable: true })
-  pgMetadata: any; // PG사 메타데이터
+  @OneToOne(() => PaymentInfo, (paymentInfo) => paymentInfo.order)
+  paymentInfo: PaymentInfo;
 
   constructor() {
     super();
